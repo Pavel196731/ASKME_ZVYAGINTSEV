@@ -1,0 +1,55 @@
+{% extends 'layouts/index_authorized.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="d-flex p-2 align-items-center">
+        <h1>New Question</h1>
+    </div>
+
+    <form class="col-9 d-flex flex-column gap-2 was-validation" action="{% url 'main_authorized' %}" >
+        <div class="mb-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Title</span>
+                </div>
+                <input type="Text" minlength="10" maxlength="100" class="form-control border-black" id="Title"
+                       placeholder="How to build a moon park?" required>
+                <div class="invalid-feedback"> Please compose a valid title.</div>
+
+            </div>
+            <span id="titleHelpInLine" class="form-text">
+                                Must be 10-100 characters long.
+                       </span>
+        </div>
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text">Text</span>
+                <textarea class="form-control border-black" placeholder="Really, how? Have no idea about it"
+                          maxlength="1000" id="Text" rows="5" required></textarea>
+                 <div class="invalid-feedback"> Please compose a valid title.</div>
+            </div>
+            <span id="textHelpInLine" class="form-text">
+                        Describe your problem. Must be less than 1000 characters long.
+                </span>
+        </div>
+
+        <div class="mb-3">
+            <div class="input-group">
+            <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Title</span>
+                </div>
+            <input type="Text" maxlength="100" class="form-control border-black" id="Tags"
+                   placeholder="moon, park, puzzle"
+                   required>
+            <div class="invalid-feedback"> Please compose a valid tags.</div>
+            </div>
+             <span id="tagsHelpInLine" class="form-text">
+                        Add tags. Must be 3 tags.
+                </span>
+        </div>
+
+        <div class="d-grid col-1">
+            <button type="submit" class="btn btn-outline-success">Ask</button>
+        </div>
+    </form>
+{% endblock %}

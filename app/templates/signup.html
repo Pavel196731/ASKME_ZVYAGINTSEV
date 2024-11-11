@@ -1,0 +1,73 @@
+{% extends 'layouts/index.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="d-flex gap-3 align-items-center">
+        <h1>Registration</h1>
+    </div>
+    <form class="col-9 d-flex flex-column gap-3 was-validated" style="height: 100px" action="{% url 'main_authorized' %}">
+        <div class="form-group mt-2">
+            <label for="inputLogin">Login</label>
+            <input type="text" maxlength="25" minlength="6" class="form-control" id="inputLogin"
+                   placeholder="Enter your login here"
+                   value="Ya_legenda?"
+                   required>
+            <div class="invalid-feedback">Please choose a valid login.</div>
+            <span id="loginHelpInLine" class="form-text">
+                Must be 6-25 characters long.
+            </span>
+        </div>
+
+        <div class="form-group mt-2">
+            <label for="inputEmail4">Email</label>
+            <input type="email" maxlength="50" class="form-control" id="inputEmail4"
+                   placeholder="Enter your email"
+                   value="novyi_polzovatel_chata@mail.ru"
+                   required>
+            <div class="invalid-feedback">Please provide a valid email.</div>
+        </div>
+
+        <div class="form-group mt-2">
+            <label for="inputNick">NickName</label>
+            <input type="text" maxlength="20" minlength="6" class="form-control" id="inputNick"
+                   placeholder="Новый пользователь чата а уже..."
+
+                   required>
+            <div class="invalid-feedback">Please choose a valid NickName.</div>
+            <span id="nickHelpInLine" class="form-text">
+                Must be 6-20 characters long.
+            </span>
+        </div>
+
+        <div class="form-group mt-2 ">
+            <label for="Password">Password</label>
+            <input type="password" maxlength="20" minlength="8" class="form-control" id="Password"
+                   placeholder="Enter your password" required>
+            <div class="invalid-feedback">Please provide a valid password (8-20 characters).</div>
+            <span id="passwordHelpInLine" class="form-text">
+                Must be 8-20 characters long.
+            </span>
+        </div>
+
+        <div class="form-group mt-2 ">
+            <label for="RepeatPassword">Repeat password</label>
+            <input type="password" maxlength="20" minlength="8" class="form-control"
+                   id="RepeatPassword" placeholder="Repeat your password" required>
+            <div class="invalid-feedback">Please provide a valid password.</div>
+            <span id="repeatPasswordHelpInLine" class="form-text">
+                Must repeat the password.
+            </span>
+        </div>
+        <div class="form-group mt-2">
+            <label for="inputGroupFile01" class="input-group-text">Upload Avatar</label>
+            <input type="file" class="form-control" id="inputGroupFile01" required>
+            <div class="invalid-feedback">Please upload a valid avatar image.</div>
+        </div>
+        <div class="form-group pb-5 mt-2 w-100">
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </div>
+
+    </form>
+
+
+{% endblock %}
