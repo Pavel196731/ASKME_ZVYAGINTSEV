@@ -1,11 +1,13 @@
-{% extends 'layouts/index_authorized.html' %}
+{% extends 'layouts/base_authorized.html' %}
 {% load static %}
 {% block content %}
     <div class="d-flex gap-3 mb-3 align-items-center">
         <h1>Settings: Mario</h1>
         <a href="{% url 'main_authorized' %}">Main page</a>
     </div>
-    <form class="col-9 d-flex flex-column gap-4 was-validated" action="{% url 'main_authorized' %}">
+    <form class="col-9 d-flex flex-column gap-4 was-validated" method="POST" action="{% url 'main_authorized' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
         <div class="form-group col-7">
             <label for="inputLogin" class="form-label">Login</label>
             <input type="text" name="username" maxlength="25" minlength="8" class="form-control border-black"
@@ -40,7 +42,7 @@
             <div class="invalid-feedback">Please upload a valid file.</div>
         </div>
 
-         <button type="submit" class="btn btn-primary mb-5 col-7 text-center">Save</button>
+        <button class="btn btn-primary mb-5 col-7 text-center">Save</button>
 
     </form>
 {% endblock %}

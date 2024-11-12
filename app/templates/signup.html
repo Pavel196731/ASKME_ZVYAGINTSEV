@@ -1,11 +1,14 @@
-{% extends 'layouts/index.html' %}
+{% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
 
     <div class="d-flex gap-3 align-items-center">
         <h1>Registration</h1>
     </div>
-    <form class="col-9 d-flex flex-column gap-3 was-validated" style="height: 100px" action="{% url 'main_authorized' %}">
+    <form class="col-9 d-flex flex-column gap-3 was-validated" method="POST" style="height: 100px"
+          action="{% url 'main_authorized' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
         <div class="form-group mt-2">
             <label for="inputLogin">Login</label>
             <input type="text" maxlength="25" minlength="6" class="form-control" id="inputLogin"
