@@ -32,4 +32,8 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('one_question/<int:question_id>/', views.one_question, name='one_question'),
     path('admin/', admin.site.urls),
+
+
+    path('Profile_list/', views.Profile_list, name='Profile_list'),
+    path('Profile_list/Profile_detail/<int:pk>/', views.Profile_detail, name='question_detail'),
 ]

@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 
+from app.models import Question
+
 themes = {
     'будущем технологий': ['технологии', 'инновации', 'будущее'],
     'экологические проблемы': ['экология', 'окружающая среда', 'изменение климата'],
@@ -15,20 +17,20 @@ themes = {
     'будущем искусственного интеллекта': ['ИИ', 'технологии', 'машинное обучение']
 }
 
-questions = []
+QUESTIONS = []
 for i in range(1, 30):
     theme = list(themes.keys())[i % len(themes)]
-    questions.append({
+    QUESTIONS.append({
         'title': f'Вопрос #{i} Какое ваше мнение о {theme}?',
         'id': i,
         'text': f' Вопрос #{i} Что вы думаете о {theme}? Какие изменения в этой области могут произойти в ближайшее время и как они могут повлиять на нас?',
         'tags': themes[theme]
     })
 
-answers = []
+ANSWERS = []
 for i in range(1, 30):
     theme = list(themes.keys())[i % len(themes)]
-    answers.append({
+    ANSWERS.append({
         'title': f'Ответ на вопрос #{i} по теме: {theme}',
         'id': i,
         'theme': theme,
@@ -52,13 +54,13 @@ def paginate(objects_list, request, per_page=10):
 
 
 def index(request):
-    question_obj = paginate(questions, request, per_page=3)
+    question_obj = paginate(QUESTIONS, request, per_page=3)
     context = {'question_obj': question_obj, 'is_main_page': True}
     return render(request, 'index.html', context)
 
 
 def main_authorized(request):
-    question_obj = paginate(questions, request, per_page=3)
+    question_obj = paginate(QUESTIONS, request, per_page=3)
     context = {'question_obj': question_obj, 'is_main_page': True}
     return render(request, 'main_authorized.html', context)
 
@@ -75,7 +77,7 @@ def setting(request):
 
 def one_question(request, question_id):
     question = None
-    for q in questions:
+    for q in QUESTIONS:
         if q['id'] == question_id:
             question = q
             break
@@ -83,7 +85,7 @@ def one_question(request, question_id):
         return render(request, 'base.html')
 
     relevant_answers = []
-    for answer in answers:
+    for answer in ANSWERS:
         if answer['id'] == question_id:
             relevant_answers.append(answer)
 
@@ -98,7 +100,7 @@ def ask(request):
 def tags(request, tag):
 
     filtered_questions = []
-    for q in questions:
+    for q in QUESTIONS:
         if tag in q['tags']:
             filtered_questions.append(q)
 
@@ -120,3 +122,19 @@ def logout(request):
 
 def answer(request):
     return render(request, 'answer.html')
+
+
+
+
+
+
+
+
+def Profile_list(request):
+    questions = Question.objects.all().order_by()
+    page = paginate(questions, request, per_page=10)
+    return render(request, 'Profile_list.html', {'page_obj': page})
+
+def Profile_detail(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    return render(request, 'Profile_detail.html', {'question': question})

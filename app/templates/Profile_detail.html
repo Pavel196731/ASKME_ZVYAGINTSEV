@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail</title>
+</head>
+<body>
+    <h1>{{ question.title }}</h1>
+    <p>{{ question.text }}</p>
+    <p>User: {{ question.user.username }}</p>
+    <p>Tags: {% for tag in question.tags.all %}{{ tag.name }} {% endfor %}</p>
+    <p>Created: {{ question.created_at|date:"Y-m-d H:i" }}</p>
+
+    <hr>
+
+    <h2>Answers</h2>
+    {% for answer in question.answers.all %}
+        <div>
+            <p>{{ answer.text }}</p>
+            <p>User: {{ answer.user.username }}</p>
+            <p>Created: {{ answer.created_at|date:"Y-m-d H:i" }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No answers available for this question.</p>
+    {% endfor %}
+
+    <a href="{% url 'question_list' %}">Back to Questions</a>
+</body>
+</html>
