@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ASKME_Zvyagintsev.urls'
+ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
@@ -81,11 +81,15 @@ WSGI_APPLICATION = 'ASKME_Zvyagintsev.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "data1",
+        "NAME": "data2",
         "USER": "root",
         "PASSWORD": "123456",
         "HOST": "127.0.0.1",
         "PORT": "3306",
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+        'CONN_MAX_AGE': 6000,  # Keep connection alive for 10 minutes
     }
 }
 

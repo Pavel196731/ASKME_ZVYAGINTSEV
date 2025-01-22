@@ -1,39 +1,51 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
-    <div class="d-flex align-items-center">
-        <h1>Questions tagged with "{{ tag }}"</h1>
-        <a href="{% url 'index' %}" class="ms-3">Back to Main Page</a>
-    </div>
-    <div class="col-9 d-flex flex-column gap-4 ">
-        {% for question in tag_obj %}
-            {% include 'question.html' with question=question %}
-        {% endfor %}
+    <div class="col-9 d-flex flex-column gap-4" style="margin-bottom: 30px;">
+        <div class="d-flex p-2 align-items-center">
+            <h1 class="me-4">Questions with tag: {{ tag.name }}</h1>
+        </div>
 
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                {% if tag_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ tag_obj.previous_page_number }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-                {% for num in tag_obj.paginator.page_range %}
-                    <li class="page-item {% if tag_obj.number == num %}active{% endif %}">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% endfor %}
-
-                {% if tag_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ tag_obj.next_page_number }}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% if questions %}
+            {% for question in questions %}
+                <article class="d-flex flex-column gap-3">
+                    <div class="card w-100" style="width: 18rem;">
+                        <div class="card-body border border-black">
+                            <div class="row">
+                                <div class="col-2">
+                                    <div class="d-flex border border-black mb-2" style="height:100px;">
+                                        <img src="{% static 'img/Mario2small.jpg' %}" alt="Avatar" class="img-fluid"
+                                             style="object-fit: contain; width: 100%; height: 100%;">
+                                    </div>
+                                    <div class="d-flex border border-black justify-content-between" style="height:50px;">
+                                        <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                                            <p style="font-size: 40px; margin: 10px;">5</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <h5 class="card-title">
+                                            <a href="{% url 'one_question' question.id %}">{{ question.title }}</a>
+                                        </h5>
+                                        <p class="card-text">{{ question.text }}</p>
+                                    </div>
+                                    <div class="d-flex gap-5">
+                                        <div>
+                                            Tags:
+                                            {% for tag in question.tags.all %}
+                                                <a href="{% url 'tags' tag.name %}" class="card-link">{{ tag.name }}</a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p>No questions found with this tag.</p>
+        {% endif %}
     </div>
 {% endblock %}

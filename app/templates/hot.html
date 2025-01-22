@@ -1,0 +1,50 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+     <div class="col-9 d-flex flex-column gap-4" style="margin-bottom: 30px;">
+        <div class="d-flex p-2 align-items-center">
+            <h1 class="me-4">Hot Questions</h1>
+        </div>
+        {% for question in questions %}
+            <article class="d-flex flex-column gap-3">
+                <div class="card w-100" style="width: 18rem;">
+                    <div class="card-body border border-black">
+                        <div class="row">
+                            <div class="col-2">
+                                <div class="d-flex border border-black mb-2" style="height:100px;">
+                                    <img src="{% static 'img/Mario2small.jpg' %}" alt="Avatar" class="img-fluid"
+                                         style="object-fit: contain; width: 100%; height: 100%;">
+                                </div>
+                                <div class="d-flex border border-black justify-content-between" style="height:50px;">
+                                    <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                                        <p style="font-size: 40px; margin: 10px;">5</p>
+                                    </div>
+                                </div>
+                                <div class="btn-group-vertical w-100" role="group" aria-label="Vertical button group">
+                                    <button type="button" class="btn btn-danger btn-primary btn-sm">Like</button>
+                                    <button type="button" class="btn btn-success btn-secondary btn-sm">Dislike</button>
+                                </div>
+                            </div>
+                            <div class="col-10 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h5 class="card-title">
+                                        <a href="{% url 'one_question' question.id %}">{{ question.title }}</a>
+                                    </h5>
+                                    <p class="card-text">{{ question.text }}</p>
+                                </div>
+                                <div class="d-flex gap-5">
+                                    <div>
+                                        Tags:
+                                        {% for tag in question.tags.all %}
+                                            <a href="{% url 'tags' tag.name %}" class="card-link">{{ tag.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -5,6 +5,7 @@
         <div class="d-flex p-2 align-items-center">
             <h1>New Question</h1>
              <a href="{% url 'ask' %}" class="ms-4 ">Create new question</a>
+
         </div>
         {% for question in question_obj %}
             {% include 'question.html' %}
@@ -18,7 +19,6 @@
                 {% endif %}
 
                 {% for num in question_obj.paginator.page_range %}
-                    {#  <li class="page-item {% if page_obj.number == num %}active{% endif %}">  подсветка #}
                     <a class="page-link" href="?page={{ num }}">{{ num }}</a>
                 {% endfor %}
                 {% if question_obj.has_next %}

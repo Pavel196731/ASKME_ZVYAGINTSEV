@@ -1,14 +1,23 @@
 from tkinter.messagebox import QUESTION
 
-from django.contrib.auth.forms import AuthenticationForm
+import page
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.dispatch import receiver
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import HttpResponse
+from django import forms
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 
-from app.models import Question
+from app import utils, models
+from app.models import Question, Answer, Profile, Tag
 
 themes = {
     'будущем технологий': ['технологии', 'инновации', 'будущее'],
@@ -40,6 +49,15 @@ for i in range(1, 30):
 
 # Create your views here.
 
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(max_length=254, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'}))
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your login here'}))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'}))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Repeat your password'}))
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -54,9 +72,15 @@ def paginate(objects_list, request, per_page=10):
 
 
 def index(request):
-    question_obj = paginate(QUESTIONS, request, per_page=3)
+    question_list = Question.objects.all()
+
+    paginator = Paginator(question_list, 3)
+    page_number = request.GET.get('page')
+    question_obj = paginator.get_page(page_number)
+
     context = {'question_obj': question_obj, 'is_main_page': True}
     return render(request, 'index.html', context)
+
 
 
 def main_authorized(request):
@@ -75,60 +99,97 @@ def setting(request):
     return render(request, 'setting.html')
 
 
-def one_question(request, question_id):
-    question = None
-    for q in QUESTIONS:
-        if q['id'] == question_id:
-            question = q
-            break
-    if not question:
-        return render(request, 'base.html')
+def one_question(request: HttpRequest, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    answers = Answer.objects.filter(question=question)
 
-    relevant_answers = []
-    for answer in ANSWERS:
-        if answer['id'] == question_id:
-            relevant_answers.append(answer)
+    context = {
+        'question': question,
+        'answers': answers,
+        'is_auth': False,
+        'if_empty': {
+            'title': 'So far there are no answers.',
+            'description': 'You can be the first to answer!'
+        },
+        'top_users': models.Profile.objects.get_top_users(),
+        'top_tags': models.Tag.objects.get_top_tags(count=7)
+    }
 
-    answer_obj = paginate(relevant_answers*30,request, per_page=3)
-    context = {'question': question, 'answer_obj': answer_obj, 'is_main_page': False}
     return render(request, 'one_question.html', context)
-
 
 def ask(request):
     return render(request, 'ask.html')
 
 def tags(request, tag):
-
-    filtered_questions = []
-    for q in QUESTIONS:
-        if tag in q['tags']:
-            filtered_questions.append(q)
-
-    tag_obj = paginate(filtered_questions,request, per_page=3)
+    tag = get_object_or_404(Tag, name=tag)
+    questions = Question.objects.filter(tags=tag)
 
     context = {
         'tag': tag,
-        'tag_obj': tag_obj
+        'questions': questions,
     }
+
     return render(request, 'tags.html', context)
 
 
 def signup(request):
-    return render(request, 'signup.html')
+    if request.method == "POST":
+        login = request.POST.get("login")
+        email = request.POST.get("email")
+        nickname = request.POST.get("nickname")
+        password = request.POST.get("password")
+        repeat_password = request.POST.get("repeat_password")
+        avatar = request.FILES.get("avatar")
+
+        if password != repeat_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "signup.html")
+
+        try:
+            user = User.objects.create_user(
+                username=login,
+                email=email,
+                password=password
+            )
+            user.first_name = nickname
+            user.save()
+
+            authenticated_user = authenticate(username=login, password=password)
+            if authenticated_user:
+                login(request, authenticated_user)
+
+            messages.success(request, "Registration successful.")
+            return redirect("main_authorized")
+        except Exception as e:
+            messages.error(request, f"Registration failed: {e}")
+            return render(request, "signup.html")
+
+    return render(request, "signup.html")
 
 
 def logout(request):
     return redirect('index')
 
-def answer(request):
-    return render(request, 'answer.html')
 
+def hot(request: HttpRequest):
+    page = utils.paginate(models.Question.objects.get_top_questions(), request)
+    context = {
+        'questions': page['object_list'],
+        'page': page,
+        'is_auth': False,
+        'if_empty': {
+            'title': 'So far there are no questions.',
+            'description': 'But you can ask your question!'
+        },
+        'top_users': models.Profile.objects.get_top_users(),
+        'top_tags': models.Tag.objects.get_top_tags(count=7)
+    }
 
+    return render(request, 'hot.html', context)
 
-
-
-
-
+def get_answers_for_question(question):
+    answers = Answer.objects.filter(question=question)
+    return answers
 
 def Profile_list(request):
     questions = Question.objects.all().order_by()
@@ -138,3 +199,8 @@ def Profile_list(request):
 def Profile_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     return render(request, 'Profile_detail.html', {'question': question})
+
+
+def answer(request):
+    return render(request, 'answer.html')
+
